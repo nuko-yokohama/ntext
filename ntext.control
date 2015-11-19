@@ -1,0 +1,5 @@
+# ntext extension
+comment = 'Japanese normalize compare text (UTF-8)'
+default_version = '1.0'
+module_pathname = '$libdir/ntext'
+relocatable = true

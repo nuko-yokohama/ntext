@@ -1,0 +1,213 @@
+CREATE EXTENSION ksj;
+CREATE TABLE ksj_sample (data ksj);
+INSERT INTO ksj_sample VALUES ('五百拾六'),('零'),('弐万百壱');
+SELECT * FROM ksj_sample;
+    data    
+------------
+ 五百壱拾六
+ 零
+ 参万壱百壱
+(3 rows)
+
+SELECT ksj_add('百','拾');
+ ksj_add  
+----------
+ 壱百壱拾
+(1 row)
+
+SELECT ksj_sub('百','拾');
+ ksj_sub 
+---------
+ 九拾
+(1 row)
+
+SELECT ksj_mul('百','拾');
+ ksj_mul 
+---------
+ 壱千
+(1 row)
+
+SELECT ksj_div('百','拾');
+ ksj_div 
+---------
+ 壱拾
+(1 row)
+
+SELECT ksj_mod('百','拾');
+ ksj_mod 
+---------
+ 零
+(1 row)
+
+SELECT '百'::ksj + '拾'::ksj;
+ ?column? 
+----------
+ 壱百壱拾
+(1 row)
+
+SELECT '百'::ksj - '拾'::ksj;
+ ?column? 
+----------
+ 九拾
+(1 row)
+
+SELECT '百'::ksj * '拾'::ksj;
+ ?column? 
+----------
+ 壱千
+(1 row)
+
+SELECT '百'::ksj / '拾'::ksj;
+ ?column? 
+----------
+ 壱拾
+(1 row)
+
+SELECT '百'::ksj % '拾'::ksj;
+ ?column? 
+----------
+ 零
+(1 row)
+
+SELECT data, data + '拾' FROM ksj_sample;
+    data    |    ?column?    
+------------+----------------
+ 五百壱拾六 | 五百弐拾六
+ 零         | 壱拾
+ 参万壱百壱 | 参万壱百壱拾壱
+(3 rows)
+
+SELECT data, data * '拾' FROM ksj_sample;
+    data    |   ?column?   
+------------+--------------
+ 五百壱拾六 | 五千壱百六拾
+ 零         | 零
+ 参万壱百壱 | 参拾壱千壱拾
+(3 rows)
+
+SELECT data, data / '拾' FROM ksj_sample;
+    data    | ?column? 
+------------+----------
+ 五百壱拾六 | 五拾壱
+ 零         | 零
+ 参万壱百壱 | 参千壱拾
+(3 rows)
+
+SELECT data, data % '拾' FROM ksj_sample;
+    data    | ?column? 
+------------+----------
+ 五百壱拾六 | 六
+ 零         | 零
+ 参万壱百壱 | 壱
+(3 rows)
+
+SELECT sum(data) FROM ksj_sample;
+      sum       
+----------------
+ 参万六百壱拾七
+(1 row)
+
+SELECT max(data) FROM ksj_sample;
+    max     
+------------
+ 参万壱百壱
+(1 row)
+
+SELECT min(data) FROM ksj_sample;
+ min 
+-----
+ 零
+(1 row)
+
+SELECT * FROM ksj_sample WHERE data = '五百拾六';
+    data    
+------------
+ 五百壱拾六
+(1 row)
+
+SELECT * FROM ksj_sample WHERE data <> '五百拾六';
+    data    
+------------
+ 零
+ 参万壱百壱
+(2 rows)
+
+SELECT * FROM ksj_sample WHERE data < '五百拾六';
+ data 
+------
+ 零
+(1 row)
+
+SELECT * FROM ksj_sample WHERE data > '五百拾六';
+    data    
+------------
+ 参万壱百壱
+(1 row)
+
+SELECT * FROM ksj_sample WHERE data <= '五百拾六';
+    data    
+------------
+ 五百壱拾六
+ 零
+(2 rows)
+
+SELECT * FROM ksj_sample WHERE data >= '五百拾六';
+    data    
+------------
+ 五百壱拾六
+ 参万壱百壱
+(2 rows)
+
+SELECT * FROM ksj_sample ORDER BY data;
+    data    
+------------
+ 零
+ 五百壱拾六
+ 参万壱百壱
+(3 rows)
+
+SELECT * FROM ksj_sample ORDER BY data::text;
+    data    
+------------
+ 五百壱拾六
+ 参万壱百壱
+ 零
+(3 rows)
+
+SELECT * FROM ksj_sample ORDER BY data DESC;
+    data    
+------------
+ 参万壱百壱
+ 五百壱拾六
+ 零
+(3 rows)
+
+CREATE INDEX ksj_idx ON ksj_sample (data);
+SET enable_seqscan = off;
+EXPLAIN SELECT data FROM ksj_sample WHERE data = '五百拾六';
+                                QUERY PLAN                                
+--------------------------------------------------------------------------
+ Index Scan using ksj_idx on ksj_sample  (cost=0.00..8.27 rows=1 width=4)
+   Index Cond: (data = '五百壱拾六'::ksj)
+(2 rows)
+
+TRUNCATE TABLE ksj_sample;
+INSERT INTO ksj_sample VALUES (516::ksj),(0::ksj),(20101::ksj);
+SELECT data FROM ksj_sample;
+    data    
+------------
+ 五百壱拾六
+ 零
+ 弐万壱百壱
+(3 rows)
+
+SELECT data::integer FROM ksj_sample;
+ data  
+-------
+   516
+     0
+ 20101
+(3 rows)
+
+DROP TABLE ksj_sample;
+DROP EXTENSION ksj;
